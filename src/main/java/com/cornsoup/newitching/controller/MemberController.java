@@ -20,12 +20,16 @@ public class MemberController {
             @PathVariable String urlKey,
             @RequestBody MemberRegisterRequest request
     ) {
-        boolean success = memberService.registerMember(urlKey, request);
-
-        if (success) {
-            return ResponseEntity.ok(Map.of("message", "등록이 완료되었습니다."));
-        } else {
-            return ResponseEntity.status(500).body(Map.of("message", "등록에 실패했습니다."));
+        try {
+            String token = memberService.registerMember(urlKey, request);
+            return ResponseEntity.ok(Map.of(
+                    "message", "등록이 완료되었습니다.",
+                    "token", token
+            ));
+        } catch (IllegalArgumentException e) {
+            return ResponseEntity.badRequest().body(Map.of("error", e.getMessage()));
+        } catch (Exception e) {
+            return ResponseEntity.status(500).body(Map.of("error", "서버 오류로 등록에 실패했습니다."));
         }
     }
 }
