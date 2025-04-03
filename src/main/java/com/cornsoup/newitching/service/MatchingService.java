@@ -1,8 +1,8 @@
-package com.cornsoup.traitmatcher.service;
+package com.cornsoup.newitching.service;
 
-import com.cornsoup.traitmatcher.domain.MatchingInfo;
-import com.cornsoup.traitmatcher.dto.MatchingRegisterRequest;
-import com.cornsoup.traitmatcher.repository.MatchingInfoRepository;
+import com.cornsoup.newitching.domain.MatchingInfo;
+import com.cornsoup.newitching.dto.MatchingRegisterRequest;
+import com.cornsoup.newitching.repository.MatchingInfoRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Service;

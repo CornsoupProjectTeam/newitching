@@ -1,9 +1,8 @@
-package com.cornsoup.traitmatcher.domain;
+package com.cornsoup.newitching.domain;
 
 import jakarta.persistence.*;
 import lombok.*;
 import java.math.BigDecimal;
-import java.util.List;
 
 @Entity
 @Table(name = "MEMBER")

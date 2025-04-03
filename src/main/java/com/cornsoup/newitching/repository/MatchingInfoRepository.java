@@ -1,6 +1,6 @@
-package com.cornsoup.traitmatcher.repository;
+package com.cornsoup.newitching.repository;
 
-import com.cornsoup.traitmatcher.domain.MatchingInfo;
+import com.cornsoup.newitching.domain.MatchingInfo;
 import org.springframework.data.jpa.repository.JpaRepository;
 
 public interface MatchingInfoRepository extends JpaRepository<MatchingInfo, String> {

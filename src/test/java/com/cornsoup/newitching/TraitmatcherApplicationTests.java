@@ -1,4 +1,4 @@
-package com.cornsoup.traitmatcher;
+package com.cornsoup.newitching;
 
 import org.junit.jupiter.api.Test;
 import org.springframework.boot.test.context.SpringBootTest;

@@ -1,4 +1,4 @@
-package com.cornsoup.traitmatcher.security;
+package com.cornsoup.newitching.security;
 
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;

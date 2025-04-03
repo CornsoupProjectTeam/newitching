@@ -1,7 +1,7 @@
-package com.cornsoup.traitmatcher.controller;
+package com.cornsoup.newitching.controller;
 
-import com.cornsoup.traitmatcher.dto.MatchingRegisterRequest;
-import com.cornsoup.traitmatcher.service.MatchingService;
+import com.cornsoup.newitching.dto.MatchingRegisterRequest;
+import com.cornsoup.newitching.service.MatchingService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;

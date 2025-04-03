@@ -1,4 +1,4 @@
-package com.cornsoup.traitmatcher.domain;
+package com.cornsoup.newitching.domain;
 
 import jakarta.persistence.*;
 import lombok.*;

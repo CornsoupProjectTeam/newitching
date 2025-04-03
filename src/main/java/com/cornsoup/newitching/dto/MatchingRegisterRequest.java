@@ -1,4 +1,4 @@
-package com.cornsoup.traitmatcher.dto;
+package com.cornsoup.newitching.dto;
 
 import lombok.Data;
 import java.time.LocalDateTime;
