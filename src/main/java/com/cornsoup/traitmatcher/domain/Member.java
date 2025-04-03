@@ -47,8 +47,5 @@ public class Member {
     @Column(name = "NEUROTICISM_SCORE", precision = 4, scale = 2)
     private BigDecimal neuroticismScore;
 
-    @OneToMany(mappedBy = "member", cascade = CascadeType.ALL, orphanRemoval = true, fetch = FetchType.LAZY)
-    private List<MemberStrength> strengths;
-
 }
 
