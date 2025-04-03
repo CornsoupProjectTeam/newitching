@@ -20,7 +20,12 @@ public class MemberController {
             @PathVariable String urlKey,
             @RequestBody MemberRegisterRequest request
     ) {
-        String memberId = memberService.registerMember(urlKey, request);
-        return ResponseEntity.ok(Map.of("memberId", memberId));
+        boolean success = memberService.registerMember(urlKey, request);
+
+        if (success) {
+            return ResponseEntity.ok(Map.of("message", "등록이 완료되었습니다."));
+        } else {
+            return ResponseEntity.status(500).body(Map.of("message", "등록에 실패했습니다."));
+        }
     }
 }
