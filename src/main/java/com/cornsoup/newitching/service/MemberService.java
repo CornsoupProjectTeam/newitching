@@ -6,18 +6,21 @@ import com.cornsoup.newitching.dto.MemberRegisterRequest;
 import com.cornsoup.newitching.repository.MatchingInfoRepository;
 import com.cornsoup.newitching.repository.MemberRepository;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 
 import java.util.UUID;
 
+@Slf4j
 @Service
 @RequiredArgsConstructor
 public class MemberService {
 
     private final MemberRepository memberRepository;
     private final MatchingInfoRepository matchingInfoRepository;
+    private final JwtService jwtService;
 
-    public String registerMember(String urlKey, MemberRegisterRequest request) {
+    public boolean registerMember(String urlKey, MemberRegisterRequest request) {
         String url = "/matching/" + urlKey;
 
         // 1. URL로 매칭 조회
@@ -44,7 +47,11 @@ public class MemberService {
                 .build();
         memberRepository.save(member);
 
-        return memberId;
+        // 5. 비동기로 토큰 발급 요청
+        jwtService.createTokenAsync(memberId);
+        log.info("토큰 발급 요청 완료 - memberId: {}", memberId);
+
+        return true;
     }
 
 }
