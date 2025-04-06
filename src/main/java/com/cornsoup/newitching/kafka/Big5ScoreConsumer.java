@@ -14,6 +14,14 @@ public class Big5ScoreConsumer {
 
     private final MemberService memberService;
 
+    @KafkaListener(
+            topics = "big5_scores",
+            groupId = "springboot-group",
+            properties = {
+                    "spring.json.value.default.type=com.cornsoup.newitching.kafka.dto.Big5ScoreMessage",
+                    "spring.json.trusted.packages=com.cornsoup.newitching.kafka.dto"
+            }
+    )
     @KafkaListener(topics = "big5_scores", groupId = "springboot-group")
     public void consume(Big5ScoreMessage message) {
         log.info("BIG5 점수 수신: {}", message.getMemberId());
