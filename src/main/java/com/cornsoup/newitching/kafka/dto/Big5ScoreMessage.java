@@ -9,11 +9,7 @@ import java.util.Map;
 @Getter
 @Setter
 public class Big5ScoreMessage {
-
-    @JsonProperty("member_id")
     private String memberId;
-
     private Map<String, Double> scores;
-
     private String timestamp;
 }
