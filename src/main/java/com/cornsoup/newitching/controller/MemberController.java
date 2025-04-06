@@ -10,12 +10,11 @@ import java.util.Map;
 
 @RestController
 @RequiredArgsConstructor
-@RequestMapping("/matching")
 public class MemberController {
 
     private final MemberService memberService;
 
-    @PostMapping("/{urlKey}/member-register")
+    @PostMapping("/{urlKey}/register")
     public ResponseEntity<?> registerMember(
             @PathVariable String urlKey,
             @RequestBody MemberRegisterRequest request
