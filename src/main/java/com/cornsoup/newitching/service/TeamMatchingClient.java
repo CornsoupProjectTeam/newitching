@@ -1,7 +1,9 @@
 package com.cornsoup.newitching.service;
 
+import com.cornsoup.newitching.dto.TeamMatchingRequest;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.http.MediaType;
 import org.springframework.stereotype.Service;
 import org.springframework.web.reactive.function.client.WebClient;
 import org.springframework.web.reactive.function.client.ClientResponse;
@@ -17,10 +19,12 @@ public class TeamMatchingClient {
 
     private final WebClient webClient;
 
-    public void requestTeamMatching(String matchingId, String jwtToken) {
+    public void requestTeamMatching(String matchingId, String jwtToken, int teamSize) {
         webClient.post()
                 .uri("/start")
                 .header("Authorization", "Bearer " + jwtToken)
+                .contentType(MediaType.APPLICATION_JSON)
+                .bodyValue(new TeamMatchingRequest(teamSize))
                 .exchangeToMono(response -> handleResponse(response, matchingId))
                 .retryWhen(
                         Retry.fixedDelay(3, Duration.ofSeconds(5)) // 5초 간격으로 최대 3번 재시도
