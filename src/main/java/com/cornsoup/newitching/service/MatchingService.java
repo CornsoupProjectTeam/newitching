@@ -39,17 +39,31 @@ public class MatchingService {
             throw new IllegalArgumentException("이미 존재하는 매칭 ID입니다.");
         }
 
-        // 2. 랜덤 UUID 기반 URL 키 생성 (중복 검사 포함)
+        // 2. memberCount와 teamSize 나누어떨어지는지 검증
+        Integer memberCount = request.getMemberCount();
+        Integer teamSize = request.getTeamSize();
+
+        if (memberCount == null || teamSize == null || memberCount <= 0 || teamSize <= 0) {
+            throw new IllegalArgumentException("멤버 수와 팀 크기는 0보다 커야 합니다.");
+        }
+
+        if (memberCount % teamSize != 0) {
+            throw new IllegalArgumentException(
+                    String.format("멤버 수(%d)와 팀 크기(%d)가 나누어떨어지지 않습니다.", memberCount, teamSize)
+            );
+        }
+
+        // 3. 랜덤 UUID 기반 URL 키 생성 (중복 검사 포함)
         String urlkey;
         do {
             urlkey = UUID.randomUUID().toString().substring(0, 8);
         } while (matchingInfoRepository.existsByUrl(urlkey)); // 중복이면 다시 생성
 
-        // 3. 패스워드 암호화
+        // 4. 패스워드 암호화
         String rawPassword = request.getPassword();
         String encodedPassword = passwordEncoder.encode(rawPassword);
 
-        // 4. DB에 저장
+        // 5. DB에 저장
         MatchingInfo info = MatchingInfo.builder()
                 .matchingId(matchingId)
                 .password(encodedPassword)
@@ -86,7 +100,9 @@ public class MatchingService {
 
         // 모든 조건 충족, 팀 매칭 요청
         String token = jwtTokenProvider.generateServerToServerToken(matchingId);
-        teamMatchingClient.requestTeamMatching(matchingId, token);
+        int teamSize = matchingInfo.getTeamSize();
+
+        teamMatchingClient.requestTeamMatching(matchingId, token, teamSize);
     }
 
     public List<TeamResultDto> getMatchingResults(String matchingId) {
