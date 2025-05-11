@@ -1,4 +1,4 @@
-package com.cornsoup.newitching.dto;
+package com.cornsoup.newitching.kafka.dto;
 
 import lombok.Getter;
 import lombok.Setter;
@@ -6,9 +6,9 @@ import java.util.List;
 
 @Getter
 @Setter
-public class TeamResultDto {
+public class TeamResultMessageDto {
     private int teamIndex;
-    private List<MemberDto> members;
+    private List<String> memberIds;
 
     private double conscientiousnessSimilarityScore;
     private int conscientiousnessSimilarityEval;
@@ -29,4 +29,3 @@ public class TeamResultDto {
     private double neuroticismSimilarityScore;
     private int neuroticismSimilarityEval;
 }
-
