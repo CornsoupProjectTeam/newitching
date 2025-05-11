@@ -2,6 +2,7 @@ package com.cornsoup.newitching.controller;
 
 import com.cornsoup.newitching.dto.MemberRegisterRequest;
 import com.cornsoup.newitching.service.MemberService;
+import com.cornsoup.newitching.service.MatchingService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -13,22 +14,25 @@ import java.util.Map;
 public class MemberController {
 
     private final MemberService memberService;
+    private final MatchingService matchingService;
 
+
+    @GetMapping("/{urlKey}")
+    public ResponseEntity<Map<String, String>> getMatchingIdByUrlKey(@PathVariable String urlKey) {
+        String matchingId = matchingService.getMatchingIdByUrlKey(urlKey);
+        return ResponseEntity.ok(Map.of("matchingId", matchingId));
+    }
+
+    // 멤버 등록
     @PostMapping("/{urlKey}/register")
-    public ResponseEntity<?> registerMember(
+    public ResponseEntity<Map<String, String>> registerMember(
             @PathVariable String urlKey,
             @RequestBody MemberRegisterRequest request
     ) {
-        try {
-            String token = memberService.registerMember(urlKey, request);
-            return ResponseEntity.ok(Map.of(
-                    "message", "등록이 완료되었습니다.",
-                    "token", token
-            ));
-        } catch (IllegalArgumentException e) {
-            return ResponseEntity.badRequest().body(Map.of("error", e.getMessage()));
-        } catch (Exception e) {
-            return ResponseEntity.status(500).body(Map.of("error", "서버 오류로 등록에 실패했습니다."));
-        }
+        String token = memberService.registerMember(urlKey, request);
+        return ResponseEntity.ok(Map.of(
+                "message", "등록이 완료되었습니다.",
+                "token", token
+        ));
     }
 }
