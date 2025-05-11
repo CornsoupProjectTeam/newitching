@@ -3,20 +3,22 @@ package com.cornsoup.newitching.service;
 import com.cornsoup.newitching.domain.MatchingInfo;
 import com.cornsoup.newitching.domain.Team;
 import com.cornsoup.newitching.dto.MatchingRegisterRequest;
+import com.cornsoup.newitching.dto.MemberDto;
 import com.cornsoup.newitching.dto.TeamResultDto;
 import com.cornsoup.newitching.repository.MatchingInfoRepository;
 import com.cornsoup.newitching.repository.MemberRepository;
 import com.cornsoup.newitching.repository.TeamRepository;
 import com.cornsoup.newitching.security.JwtTokenProvider;
+import com.cornsoup.newitching.security.PasswordDecryptor;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.scheduling.annotation.Async;
 
+import java.math.BigDecimal;
 import java.util.List;
 import java.util.UUID;
-import java.util.stream.Collectors;
 
 @Slf4j
 @Service
@@ -27,8 +29,21 @@ public class MatchingService {
     private final MemberRepository memberRepository;
     private final TeamRepository teamRepository;
     private final BCryptPasswordEncoder passwordEncoder;
+    private final PasswordDecryptor passwordDecryptor;
     private final JwtTokenProvider jwtTokenProvider;
     private final TeamMatchingClient teamMatchingClient;
+
+    public void doubleCheckMatchingId(String matchingId) {
+        if (matchingInfoRepository.existsById(matchingId)) {
+            throw new IllegalArgumentException("이미 존재하는 매칭 ID입니다.");
+        }
+    }
+
+    public String getMatchingIdByUrlKey(String urlKey) {
+        return matchingInfoRepository.findByUrl(urlKey)
+                .orElseThrow(() -> new IllegalArgumentException("존재하지 않는 URL 키입니다."))
+                .getMatchingId();
+    }
 
     public String registerMatching(MatchingRegisterRequest request) {
 
@@ -105,28 +120,56 @@ public class MatchingService {
         teamMatchingClient.requestTeamMatching(matchingId, token, teamSize);
     }
 
+    public void validateMatchingIdAndPassword(String matchingId, String encryptedPassword) {
+        MatchingInfo matchingInfo = matchingInfoRepository.findById(matchingId)
+                .orElseThrow(() -> new IllegalArgumentException("존재하지 않는 매칭 ID입니다."));
+
+        String rawPassword = passwordDecryptor.decrypt(encryptedPassword);
+
+        if (!passwordEncoder.matches(rawPassword, matchingInfo.getPassword())) {
+            throw new IllegalArgumentException("비밀번호가 일치하지 않습니다.");
+        }
+    }
+
     public List<TeamResultDto> getMatchingResults(String matchingId) {
         List<Team> teams = teamRepository.findTeamsByMatchingId(matchingId);
 
-        return teams.stream().map(team ->
-                TeamResultDto.builder()
-                        .teamId(team.getTeamId())
-                        .conscientiousnessSimilarityScore(team.getConscientiousnessSimilarityScore())
-                        .conscientiousnessSimilarityEval(team.getConscientiousnessSimilarityEval())
-                        .conscientiousnessMeanScore(team.getConscientiousnessMeanScore())
-                        .conscientiousnessMeanEval(team.getConscientiousnessMeanEval())
-                        .agreeablenessSimilarityScore(team.getAgreeablenessSimilarityScore())
-                        .agreeablenessSimilarityEval(team.getAgreeablenessSimilarityEval())
-                        .agreeablenessMeanScore(team.getAgreeablenessMeanScore())
-                        .agreeablenessMeanEval(team.getAgreeablenessMeanEval())
-                        .opennessDiversityEval(team.getOpennessDiversityEval())
-                        .extraversionDiversityEval(team.getExtraversionDiversityEval())
-                        .neuroticismSimilarityScore(team.getNeuroticismSimilarityScore())
-                        .neuroticismSimilarityEval(team.getNeuroticismSimilarityEval())
-                        .memberNames(team.getMembers().stream()
-                                .map(member -> member.getDepartment() + " " + member.getName())
-                                .collect(Collectors.toList()))
-                        .build()
-        ).toList();
+        return teams.stream().map(team -> {
+            TeamResultDto dto = new TeamResultDto();
+
+            dto.setTeamIndex(team.getTeamIndex());
+
+            dto.setMembers(
+                    team.getMembers().stream()
+                            .map(member -> new MemberDto(member.getDepartment(), member.getName()))
+                            .toList()
+            );
+
+            dto.setConscientiousnessSimilarityScore(getDouble(team.getConscientiousnessSimilarityScore()));
+            dto.setConscientiousnessSimilarityEval(team.getConscientiousnessSimilarityEval());
+            dto.setConscientiousnessMeanScore(getDouble(team.getConscientiousnessMeanScore()));
+            dto.setConscientiousnessMeanEval(team.getConscientiousnessMeanEval());
+
+            dto.setAgreeablenessSimilarityScore(getDouble(team.getAgreeablenessSimilarityScore()));
+            dto.setAgreeablenessSimilarityEval(team.getAgreeablenessSimilarityEval());
+            dto.setAgreeablenessMeanScore(getDouble(team.getAgreeablenessMeanScore()));
+            dto.setAgreeablenessMeanEval(team.getAgreeablenessMeanEval());
+
+            dto.setOpennessDiversityScore(getDouble(team.getOpennessDiversityScore()));
+            dto.setOpennessDiversityEval(team.getOpennessDiversityEval());
+
+            dto.setExtraversionDiversityScore(getDouble(team.getExtraversionDiversityScore()));
+            dto.setExtraversionDiversityEval(team.getExtraversionDiversityEval());
+
+            dto.setNeuroticismSimilarityScore(getDouble(team.getNeuroticismSimilarityScore()));
+            dto.setNeuroticismSimilarityEval(team.getNeuroticismSimilarityEval());
+
+            return dto;
+        }).toList();
     }
+
+    private double getDouble(BigDecimal value) {
+        return value != null ? value.doubleValue() : 0.0;
+    }
+
 }
