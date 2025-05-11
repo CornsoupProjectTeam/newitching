@@ -23,9 +23,11 @@ public class SecurityConfig {
         http
                 .csrf(csrf -> csrf.disable()) // CSRF 비활성화 (API 서버인 경우 보통 끔)
                 .authorizeHttpRequests(auth -> auth
-                        // 매칭 등록, 멤버 등록, 팀매칭 결과 조회는 인증 없이 허용
+                        // 매칭 아이디 중복확인, 매칭 등록, 멤버 등록, 팀매칭 결과 조회는 인증 없이 허용
                         .requestMatchers(
+                                "/matching/doublecheck",
                                 "/matching/register",
+                                "/{urlKey}",
                                 "/{urlKey}/register",
                                 "/matching/{matchingId}"
                         ).permitAll()
@@ -34,5 +36,11 @@ public class SecurityConfig {
                 );
 
         return http.build();
+    }
+
+    // React에서 오는 password 값 복호화를 위한 Bean 등록
+    @Bean
+    public PasswordDecryptor passwordDecryptor() {
+        return new FromReactPasswordDecryptor(); // 직접 new 해서 등록
     }
 }
