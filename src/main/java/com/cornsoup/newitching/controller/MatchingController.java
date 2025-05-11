@@ -4,6 +4,7 @@ import com.cornsoup.newitching.dto.MatchingRegisterRequest;
 import com.cornsoup.newitching.dto.MemberRegisterRequest;
 import com.cornsoup.newitching.dto.TeamResultDto;
 import com.cornsoup.newitching.service.MatchingService;
+import lombok.Data;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -19,23 +20,30 @@ public class MatchingController {
 
     private final MatchingService matchingService;
 
+    // 프로젝트 ID 중복 확인
+    @PostMapping("/doublecheck")
+    public ResponseEntity<Map<String, String>> doubleCheckMatchingId(@RequestBody Map<String, String> body) {
+        String matchingId = body.get("matchingId");
+        matchingService.doubleCheckMatchingId(matchingId);
+        return ResponseEntity.ok(Map.of("message", "사용 가능한 매칭 ID입니다."));
+    }
+
     // 매칭 등록
     @PostMapping("/register")
     public ResponseEntity<Map<String, String>> registerMatching(@RequestBody MatchingRegisterRequest request) {
-        try {
-            String urlkey = matchingService.registerMatching(request);
-            Map<String, String> response = new HashMap<>();
-            response.put("urlkey", urlkey);
-            return ResponseEntity.ok(response);
-        } catch (IllegalArgumentException e) {
-            return ResponseEntity.badRequest().body(Map.of("error", e.getMessage()));
-        }
+        String urlkey = matchingService.registerMatching(request);
+        return ResponseEntity.ok(Map.of("urlkey", urlkey));
     }
 
     // 매칭 결과 조회
-    @GetMapping("/{matchingId}")
-    public ResponseEntity<List<TeamResultDto>> getMatchingResults(@PathVariable String matchingId) {
-        List<TeamResultDto> results = matchingService.getMatchingResults(matchingId);
+    @PostMapping("/results")
+    public ResponseEntity<List<TeamResultDto>> getMatchingResults(@RequestBody Map<String, String> body) {
+        String matchingId = body.get("matchingId");
+        String password = body.get("password");
+
+        matchingService.validateMatchingIdAndPassword(matchingId, password); // 검증 수행
+
+        List<TeamResultDto> results = matchingService.getMatchingResults(matchingId); // 기존 로직
         return ResponseEntity.ok(results);
     }
 }
