@@ -32,6 +32,7 @@ public class SecurityConfig {
                                 "/{urlKey}",
                                 "/{urlKey}/register",
                                 "/{urlKey}/chat",
+                                "/{urlKey}/chat/results",
                                 "/matching/{matchingId}"
                         ).permitAll()
                         // 나머지 모든 요청은 인증 필요
