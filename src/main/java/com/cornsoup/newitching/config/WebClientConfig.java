@@ -10,7 +10,7 @@ public class WebClientConfig {
     @Bean
     public WebClient webClient() {
         return WebClient.builder()
-                .baseUrl("10.0.0.18:5000") // FastAPI 서버 주소
+                .baseUrl("http://10.0.0.18:5000") // FastAPI 서버 주소
                 .build();
     }
 }
