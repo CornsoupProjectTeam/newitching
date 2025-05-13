@@ -3,6 +3,7 @@ package com.cornsoup.newitching.controller;
 import com.cornsoup.newitching.dto.MatchingRegisterRequest;
 import com.cornsoup.newitching.dto.MemberRegisterRequest;
 import com.cornsoup.newitching.dto.TeamResultDto;
+import com.cornsoup.newitching.dto.TeamResultResponse;
 import com.cornsoup.newitching.service.MatchingService;
 import lombok.Data;
 import lombok.RequiredArgsConstructor;
@@ -37,13 +38,18 @@ public class MatchingController {
 
     // 매칭 결과 조회
     @PostMapping("/results")
-    public ResponseEntity<List<TeamResultDto>> getMatchingResults(@RequestBody Map<String, String> body) {
+    public ResponseEntity<TeamResultResponse> getMatchingResults(@RequestBody Map<String, String> body) {
         String matchingId = body.get("matchingId");
         String password = body.get("password");
 
-        matchingService.validateMatchingIdAndPassword(matchingId, password); // 검증 수행
+        matchingService.validateMatchingIdAndPassword(matchingId, password);
 
-        List<TeamResultDto> results = matchingService.getMatchingResults(matchingId); // 기존 로직
-        return ResponseEntity.ok(results);
+        List<TeamResultDto> results = matchingService.getMatchingResults(matchingId);
+        int teamSize = matchingService.getTeamSize(matchingId);
+        int memberCount = matchingService.getMemberCount(matchingId);
+
+        TeamResultResponse response = new TeamResultResponse(teamSize, memberCount, results);
+        return ResponseEntity.ok(response);
     }
+
 }
