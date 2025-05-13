@@ -13,7 +13,7 @@ public interface MemberRepository extends JpaRepository<Member, String> {
     long countByMatching_MatchingId(String matchingId);
 
     // Big5 점수가 모두 입력된 멤버만 체크
-    @Query("SELECT COUNT(m) FROM Member m WHERE m.matching = :matching AND " +
+    @Query("SELECT COUNT(m) FROM Member m WHERE m.matching.matchingId = :matchingId AND " +
             "(m.conscientiousnessScore IS NULL OR m.agreeablenessScore IS NULL OR " +
             "m.opennessScore IS NULL OR m.extraversionScore IS NULL OR m.neuroticismScore IS NULL)")
     long countIncompleteBig5MembersById(@Param("matchingId") String matchingId);
