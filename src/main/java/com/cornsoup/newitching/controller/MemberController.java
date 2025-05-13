@@ -35,4 +35,11 @@ public class MemberController {
                 "token", token
         ));
     }
+
+    // 채팅 시작
+    @GetMapping("/{urlKey}/chat")
+    public ResponseEntity<Map<String, String>> getMatchingIdByUrlKeyForChat(@PathVariable String urlKey) {
+        String matchingId = matchingService.getMatchingIdByUrlKey(urlKey);
+        return ResponseEntity.ok(Map.of("matchingId", matchingId));
+    }
 }
