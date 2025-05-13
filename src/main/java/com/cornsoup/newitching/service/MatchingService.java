@@ -17,6 +17,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.scheduling.annotation.Async;
 
 import java.math.BigDecimal;
+import java.time.LocalDateTime;
 import java.util.List;
 import java.util.UUID;
 
@@ -144,7 +145,23 @@ public class MatchingService {
     }
 
     public List<TeamResultDto> getMatchingResults(String matchingId) {
+        // 1. 마감 기한 체크
+        MatchingInfo matchingInfo = matchingInfoRepository.findByMatchingId(matchingId)
+                .orElseThrow(() -> new IllegalArgumentException("해당 매칭정보를 찾을 수 없습니다."));
+
+        if (matchingInfo.getDeadline().isAfter(LocalDateTime.now())) {
+            throw new IllegalStateException("매칭 결과는 마감기한 이후에 확인할 수 있습니다.");
+        }
+
+        // 2. 팀 정보 조회 및 검증
         List<Team> teams = teamRepository.findTeamsByMatchingId(matchingId);
+
+        boolean hasIncompleteTeam = teams.stream()
+                .anyMatch(team -> team.getMembers() == null || team.getMembers().isEmpty());
+
+        if (hasIncompleteTeam) {
+            throw new IllegalStateException("팀 정보가 모두 입력되지 않았습니다.");
+        }
 
         return teams.stream().map(team -> {
             TeamResultDto dto = new TeamResultDto();
