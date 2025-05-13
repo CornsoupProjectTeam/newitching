@@ -45,6 +45,18 @@ public class MatchingService {
                 .getMatchingId();
     }
 
+    public int getTeamSize(String matchingId) {
+        MatchingInfo matchingInfo = matchingInfoRepository.findById(matchingId)
+                .orElseThrow(() -> new IllegalArgumentException("해당 매칭 ID가 없습니다."));
+        return matchingInfo.getTeamSize();
+    }
+
+    public int getMemberCount(String matchingId) {
+        MatchingInfo matchingInfo = matchingInfoRepository.findById(matchingId)
+                .orElseThrow(() -> new IllegalArgumentException("해당 매칭 ID가 없습니다."));
+        return matchingInfo.getMemberCount();
+    }
+
     public String registerMatching(MatchingRegisterRequest request) {
 
         String matchingId = request.getMatchingId();
@@ -99,14 +111,14 @@ public class MatchingService {
                 .orElseThrow(() -> new IllegalArgumentException("해당 매칭 ID가 없습니다."));
 
         int expectedCount = matchingInfo.getMemberCount();
-        long actualCount = memberRepository.countByMatching(matchingInfo);
+        long actualCount = memberRepository.countByMatchingId(matchingId);
 
         if (expectedCount != actualCount) {
             log.info("팀매칭 멤버 수 부족 - matchingId: {} (현재 {}명 / 기대 {}명)", matchingId, actualCount, expectedCount);
             return;
         }
 
-        long incompleteBig5 = memberRepository.countIncompleteBig5Members(matchingInfo);
+        long incompleteBig5 = memberRepository.countIncompleteBig5MembersById(matchingId);
 
         if (incompleteBig5 > 0) {
             log.info("Big5 점수 입력 대기 중 - matchingId: {}, 입력 안 된 인원: {}", matchingId, incompleteBig5);
