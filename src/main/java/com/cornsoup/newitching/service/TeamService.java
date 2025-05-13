@@ -55,6 +55,7 @@ public class TeamService {
                     .build();
 
             teamRepository.save(team);
+            teamRepository.flush();
 
             // 2. 멤버 할당
             List<Member> members = memberRepository.findAllById(teamDto.getMemberIds());
