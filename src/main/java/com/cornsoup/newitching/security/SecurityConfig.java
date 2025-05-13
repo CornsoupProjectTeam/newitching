@@ -6,6 +6,8 @@ import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.web.SecurityFilterChain;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
+import org.springframework.web.servlet.config.annotation.CorsRegistry;
+import org.springframework.web.servlet.config.annotation.WebMvcConfigurer;
 
 @Configuration
 @EnableWebSecurity
@@ -43,4 +45,19 @@ public class SecurityConfig {
     public PasswordDecryptor passwordDecryptor() {
         return new FromReactPasswordDecryptor(); // 직접 new 해서 등록
     }
+
+    @Configuration
+    public class CorsConfig implements WebMvcConfigurer {
+        @Override
+        public void addCorsMappings(CorsRegistry registry) {
+            registry.addMapping("/**")
+                    //.allowedOrigins("10.0.0.18:3000") // 프론트 주소
+                    .allowedOrigins("*")
+                    .allowedMethods("GET", "POST", "PUT", "DELETE", "OPTIONS")
+                    .allowedHeaders("*")
+                    //.allowCredentials(true);
+                    .allowCredentials(false);
+        }
+    }
+
 }
