@@ -21,7 +21,7 @@ public class TeamMatchingClient {
 
     public void requestTeamMatching(String matchingId, String jwtToken, int teamSize) {
         webClient.post()
-                .uri("/start")
+                .uri("/matching/start")
                 .header("Authorization", "Bearer " + jwtToken)
                 .contentType(MediaType.APPLICATION_JSON)
                 .bodyValue(new TeamMatchingRequest(teamSize))
