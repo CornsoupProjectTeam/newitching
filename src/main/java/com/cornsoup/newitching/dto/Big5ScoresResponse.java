@@ -12,6 +12,7 @@ import java.math.BigDecimal;
 @AllArgsConstructor
 @Builder
 public class Big5ScoresResponse {
+    private String name;
     private BigDecimal conscientiousnessScore;
     private BigDecimal agreeablenessScore;
     private BigDecimal opennessScore;

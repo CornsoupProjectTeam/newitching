@@ -31,6 +31,7 @@ public class MemberService {
                 .orElseThrow(() -> new IllegalArgumentException("해당 멤버를 찾을 수 없습니다."));
 
         return Big5ScoresResponse.builder()
+                .name(member.getName())
                 .conscientiousnessScore(member.getConscientiousnessScore())
                 .agreeablenessScore(member.getAgreeablenessScore())
                 .opennessScore(member.getOpennessScore())
