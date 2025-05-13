@@ -10,7 +10,7 @@ public interface MemberRepository extends JpaRepository<Member, String> {
     boolean existsByMatchingAndDepartmentAndName(MatchingInfo matching, String department, String name);
 
     // 특정 매칭에 등록된 전체 멤버 수
-    long countByMatchingId(String matchingId);
+    long countByMatching_MatchingId(String matchingId);
 
     // Big5 점수가 모두 입력된 멤버만 체크
     @Query("SELECT COUNT(m) FROM Member m WHERE m.matching = :matching AND " +

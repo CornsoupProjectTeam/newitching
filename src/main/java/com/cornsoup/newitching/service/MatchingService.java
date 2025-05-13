@@ -111,7 +111,7 @@ public class MatchingService {
                 .orElseThrow(() -> new IllegalArgumentException("해당 매칭 ID가 없습니다."));
 
         int expectedCount = matchingInfo.getMemberCount();
-        long actualCount = memberRepository.countByMatchingId(matchingId);
+        long actualCount = memberRepository.countByMatching_MatchingId(matchingId);
 
         if (expectedCount != actualCount) {
             log.info("팀매칭 멤버 수 부족 - matchingId: {} (현재 {}명 / 기대 {}명)", matchingId, actualCount, expectedCount);
