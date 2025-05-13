@@ -102,7 +102,7 @@ public class MatchingService {
                 .build();
         matchingInfoRepository.save(info);
 
-        log.info("매칭 등록 완료 - matchingId: {}", matchingId);
+        log.info("Matching registration completed - matchingId: {}", matchingId);
         return urlkey;
     }
 
@@ -115,14 +115,14 @@ public class MatchingService {
         long actualCount = memberRepository.countByMatching_MatchingId(matchingId);
 
         if (expectedCount != actualCount) {
-            log.info("팀매칭 멤버 수 부족 - matchingId: {} (현재 {}명 / 기대 {}명)", matchingId, actualCount, expectedCount);
+            log.info("Insufficient team matching members - matchingId: {} (Current: {} / Expected: {})", matchingId, actualCount, expectedCount);
             return;
         }
 
         long incompleteBig5 = memberRepository.countIncompleteBig5MembersById(matchingId);
 
         if (incompleteBig5 > 0) {
-            log.info("Big5 점수 입력 대기 중 - matchingId: {}, 입력 안 된 인원: {}", matchingId, incompleteBig5);
+            log.info("Waiting for Big5 score input - matchingId: {}, incomplete members: {}", matchingId, incompleteBig5);
             return;
         }
 

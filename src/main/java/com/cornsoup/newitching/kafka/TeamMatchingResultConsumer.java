@@ -24,7 +24,7 @@ public class TeamMatchingResultConsumer {
     )
     @KafkaListener(topics = "team_matching_results", groupId = "springboot-group")
     public void consume(TeamResultMessage message) {
-        log.info("팀 매칭 결과 수신 - matchingId: {}", message.getMatchingId());
+        log.info("Team matching result received - matchingId: {}", message.getMatchingId());
         teamService.saveMatchingResults(message);
     }
 }

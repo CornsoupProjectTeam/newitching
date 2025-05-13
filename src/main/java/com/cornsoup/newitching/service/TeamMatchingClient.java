@@ -33,16 +33,17 @@ public class TeamMatchingClient {
                 )
                 .subscribe(
                         success -> {},
-                        error -> log.error("최종 매칭 요청 실패 - matchingId: {}, error: {}", matchingId, error.getMessage())
+                        error -> log.error("Final matching request failed - matchingId: {}, error: {}", matchingId, error.getMessage()
+)
                 );
     }
 
     private Mono<Void> handleResponse(ClientResponse response, String matchingId) {
         if (response.statusCode().is2xxSuccessful()) {
-            log.info("팀 매칭 요청 성공 - matchingId: {}", matchingId);
+            log.info("Team matching request succeeded - matchingId: {}", matchingId);
             return Mono.empty();
         } else {
-            log.warn("팀 매칭 요청 실패 - matchingId: {}, 상태코드: {}", matchingId, response.statusCode());
+            log.warn("Team matching request failed - matchingId: {}, status code: {}", matchingId, response.statusCode());
             return Mono.error(new RuntimeException("팀 매칭 요청 실패 - 상태코드: " + response.statusCode()));
         }
     }

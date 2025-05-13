@@ -24,7 +24,7 @@ public class Big5ScoreConsumer {
     )
     @KafkaListener(topics = "big5_scores", groupId = "springboot-group")
     public void consume(Big5ScoreMessage message) {
-        log.info("BIG5 점수 수신- matchingId: {}", message.getMemberId());
+        log.info("BIG5 scores received - memberId: {}", message.getMemberId());
         memberService.updateBig5Scores(message);
     }
 }

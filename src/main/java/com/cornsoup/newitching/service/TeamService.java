@@ -63,7 +63,7 @@ public class TeamService {
             }
             memberRepository.saveAll(members);
 
-            log.info("팀 저장 완료 - teamId: {}", team.getTeamId());
+            log.info("Team saved successfully - teamId: {}", team.getTeamId());
         }
     }
 
