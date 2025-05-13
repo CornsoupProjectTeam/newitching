@@ -54,15 +54,20 @@ public class TeamService {
                     .neuroticismSimilarityEval(teamDto.getNeuroticismSimilarityEval())
                     .build();
 
-            teamRepository.save(team);
-            teamRepository.flush();
+            teamRepository.saveAndFlush(team);
 
             // 2. 멤버 할당
             List<Member> members = memberRepository.findAllById(teamDto.getMemberIds());
             for (Member member : members) {
                 member.setTeam(team);
             }
+
+            // 3. 양방향 동기화
+            team.setMembers(members);
+
+            // 4. Members 저장 및 flush
             memberRepository.saveAll(members);
+            memberRepository.flush();
 
             log.info("Team saved successfully - teamId: {}", team.getTeamId());
         }
