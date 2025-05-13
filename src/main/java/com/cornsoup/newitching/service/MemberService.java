@@ -30,7 +30,22 @@ public class MemberService {
         MatchingInfo matchingInfo = matchingInfoRepository.findByUrl(urlKey)
                 .orElseThrow(() -> new IllegalArgumentException("해당 URL에 해당하는 매칭 정보가 없습니다."));
 
-        // 2. 해당 매칭에 부서 + 이름이 동일한 사람 있는지 검사
+        // 2. 멤버수와 비교하여 정원 초과 시 예외 발생
+        // 현재 등록된 인원 조회
+        long currentMemberCount = memberRepository.countByMatching_MatchingId(matchingInfo.getMatchingId());
+
+        // 최대 등록 가능 인원
+        long maxMemberCount = matchingInfo.getMemberCount();
+
+        // 정원 초과 시 등록 제한
+        if (currentMemberCount >= maxMemberCount) {
+            throw new IllegalArgumentException(String.format(
+                    "해당 매칭의 최대 등록 인원에 도달했습니다. (현재: %d명 / 정원: %d명)",
+                    currentMemberCount, maxMemberCount
+            ));
+        }
+
+        // 3. 해당 매칭에 부서 + 이름이 동일한 사람 있는지 검사
         boolean isDuplicate = memberRepository.existsByMatchingAndDepartmentAndName(
                 matchingInfo, request.getDepartment(), request.getName()
         );
@@ -38,10 +53,10 @@ public class MemberService {
             throw new IllegalArgumentException("이미 등록된 부서/이름입니다.");
         }
 
-        // 3. UUID로 MemberId 생성
+        // 4. UUID로 MemberId 생성
         String memberId = UUID.randomUUID().toString();
 
-        // 4. DB에 저장
+        // 5. DB에 저장
         Member member = Member.builder()
                 .memberId(memberId)
                 .name(request.getName())
@@ -49,11 +64,11 @@ public class MemberService {
                 .matching(matchingInfo)
                 .build();
         memberRepository.save(member);
-        log.info("멤버 등록 완료 - memberId: {}", memberId);
+        log.info("Member registration completed - memberId: {}", memberId);
 
         // 5. 토큰 즉시 생성
         String token = jwtService.createToken(memberId);
-        log.info("토큰 발급 완료 - memberId: {}", memberId);
+        log.info("Token issued successfully - memberId: {}", memberId);
 
         return token;
     }
@@ -72,7 +87,7 @@ public class MemberService {
         member.setNeuroticismScore(toBigDecimal(scores.get("신경증")));
 
         memberRepository.save(member);
-        log.info("BIG5 점수 저장 완료 - memberId: {}", message.getMemberId());
+        log.info("BIG5 scores saved successfully - memberId: {}", message.getMemberId());
 
         // Big5 점수 업데이트 후 매칭 모니터링 트리거
         matchingService.monitorMatching(member.getMatching().getMatchingId());
