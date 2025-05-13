@@ -2,6 +2,7 @@ package com.cornsoup.newitching.service;
 
 import com.cornsoup.newitching.domain.MatchingInfo;
 import com.cornsoup.newitching.domain.Member;
+import com.cornsoup.newitching.dto.Big5ScoresResponse;
 import com.cornsoup.newitching.dto.MemberRegisterRequest;
 import com.cornsoup.newitching.kafka.dto.Big5ScoreMessage;
 import com.cornsoup.newitching.repository.MatchingInfoRepository;
@@ -24,6 +25,19 @@ public class MemberService {
     private final MatchingInfoRepository matchingInfoRepository;
     private final JwtService jwtService;
     private final MatchingService matchingService;
+
+    public Big5ScoresResponse getBig5Scores(String memberId) {
+        Member member = memberRepository.findById(memberId)
+                .orElseThrow(() -> new IllegalArgumentException("해당 멤버를 찾을 수 없습니다."));
+
+        return Big5ScoresResponse.builder()
+                .conscientiousnessScore(member.getConscientiousnessScore())
+                .agreeablenessScore(member.getAgreeablenessScore())
+                .opennessScore(member.getOpennessScore())
+                .extraversionScore(member.getExtraversionScore())
+                .neuroticismScore(member.getNeuroticismScore())
+                .build();
+    }
 
     public String registerMember(String urlKey, MemberRegisterRequest request) {
         // 1. URL로 매칭 조회

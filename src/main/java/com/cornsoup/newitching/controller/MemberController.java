@@ -1,5 +1,6 @@
 package com.cornsoup.newitching.controller;
 
+import com.cornsoup.newitching.dto.Big5ScoresResponse;
 import com.cornsoup.newitching.dto.MemberRegisterRequest;
 import com.cornsoup.newitching.service.MemberService;
 import com.cornsoup.newitching.service.MatchingService;
@@ -42,4 +43,14 @@ public class MemberController {
         String matchingId = matchingService.getMatchingIdByUrlKey(urlKey);
         return ResponseEntity.ok(Map.of("matchingId", matchingId));
     }
+
+    // 채팅 시작
+    @PostMapping("/{urlKey}/chat/results")
+    public ResponseEntity<Big5ScoresResponse> getBig5Scores(@PathVariable String urlKey, @RequestBody Map<String, String> request) {
+        String memberId = request.get("memberId");
+        Big5ScoresResponse response = memberService.getBig5Scores(memberId);
+        return ResponseEntity.ok(response);
+    }
+
+
 }
