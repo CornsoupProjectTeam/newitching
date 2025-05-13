@@ -52,7 +52,7 @@ public class SecurityConfig {
         @Override
         public void addCorsMappings(CorsRegistry registry) {
             registry.addMapping("/**")
-                    //.allowedOrigins("10.0.0.18:3000") // 프론트 주소
+                    //.allowedOrigins("10.0.0.19:3000") // 프론트 주소
                     .allowedOrigins("*")
                     .allowedMethods("GET", "POST", "PUT", "DELETE", "OPTIONS")
                     .allowedHeaders("*")
