@@ -23,9 +23,9 @@ public class SecurityConfig {
     @Bean
     public SecurityFilterChain filterChain(HttpSecurity http) throws Exception {
         http
-                .csrf(csrf -> csrf.disable()) // CSRF 비활성화 (API 서버인 경우 보통 끔)
+                .cors(cors -> {})
+                .csrf(csrf -> csrf.disable())
                 .authorizeHttpRequests(auth -> auth
-                        // 매칭 아이디 중복확인, 매칭 등록, 멤버 등록, 팀매칭 결과 조회는 인증 없이 허용
                         .requestMatchers(
                                 "/matching/doublecheck",
                                 "/matching/register",
@@ -35,7 +35,6 @@ public class SecurityConfig {
                                 "/{urlKey}/chat/results",
                                 "/matching/{matchingId}"
                         ).permitAll()
-                        // 나머지 모든 요청은 인증 필요
                         .anyRequest().authenticated()
                 );
 
@@ -49,16 +48,13 @@ public class SecurityConfig {
     }
 
     @Configuration
-    public class CorsConfig implements WebMvcConfigurer {
+    public class WebConfig implements WebMvcConfigurer {
         @Override
         public void addCorsMappings(CorsRegistry registry) {
             registry.addMapping("/**")
-                    //.allowedOrigins("10.0.0.19:3000") // 프론트 주소
-                    .allowedOrigins("*")
+                    .allowedOrigins("http://10.0.0.19:3000")
                     .allowedMethods("GET", "POST", "PUT", "DELETE", "OPTIONS")
-                    .allowedHeaders("*")
-                    //.allowCredentials(true);
-                    .allowCredentials(false);
+                    .allowCredentials(true);
         }
     }
 
