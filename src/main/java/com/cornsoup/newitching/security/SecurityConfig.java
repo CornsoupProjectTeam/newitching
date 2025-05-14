@@ -52,7 +52,7 @@ public class SecurityConfig {
         @Override
         public void addCorsMappings(CorsRegistry registry) {
             registry.addMapping("/**")
-                    .allowedOrigins("http://10.0.0.19:3000")
+                    .allowedOrigins("http://210.110.103.135:3000")
                     .allowedMethods("GET", "POST", "PUT", "DELETE", "OPTIONS")
                     .allowCredentials(true);
         }
