@@ -95,11 +95,22 @@ public class MemberService {
 
         Map<String, Double> scores = message.getScores();
 
-        member.setConscientiousnessScore(resolveScore(scores.get("성실성"), member.getConscientiousnessScore()));
-        member.setAgreeablenessScore(resolveScore(scores.get("친화성"), member.getAgreeablenessScore()));
-        member.setOpennessScore(resolveScore(scores.get("경험에 대한 개방성"), member.getOpennessScore()));
-        member.setExtraversionScore(resolveScore(scores.get("외향성"), member.getExtraversionScore()));
-        member.setNeuroticismScore(resolveScore(scores.get("신경증"), member.getNeuroticismScore()));
+        Double conscientiousness = scores.get("성실성");
+        Double agreeableness = scores.get("친화성");
+        Double openness = scores.get("경험에 대한 개방성");
+        Double extraversion = scores.get("외향성");
+        Double neuroticism = scores.get("신경증");
+
+        if (conscientiousness == null || agreeableness == null || openness == null
+                || extraversion == null || neuroticism == null) {
+            throw new IllegalArgumentException("BIG5 점수 중 누락된 항목이 있습니다.");
+        }
+
+        member.setConscientiousnessScore(toBigDecimal(scores.get("성실성")));
+        member.setAgreeablenessScore(toBigDecimal(scores.get("친화성")));
+        member.setOpennessScore(toBigDecimal(scores.get("경험에 대한 개방성")));
+        member.setExtraversionScore(toBigDecimal(scores.get("외향성")));
+        member.setNeuroticismScore(toBigDecimal(scores.get("신경증")));
 
         memberRepository.save(member);
         log.info("BIG5 scores saved successfully - memberId: {}", message.getMemberId());
@@ -112,14 +123,14 @@ public class MemberService {
         return value != null ? BigDecimal.valueOf(value) : null;
     }
 
-    private BigDecimal resolveScore(Double incomingScore, BigDecimal existingScore) {
-        if (incomingScore != null) {
-            return toBigDecimal(incomingScore);
-        } else if (existingScore == null) {
-            double randomValue = 55 + Math.random() * 30; // 55 ~ 85
-            return BigDecimal.valueOf(Math.round(randomValue * 100.0) / 100.0); // 소수점 2자리 반올림
-        } else {
-            return existingScore;
-        }
-    }
+//    private BigDecimal resolveScore(Double incomingScore, BigDecimal existingScore) {
+//        if (incomingScore != null) {
+//            return toBigDecimal(incomingScore);
+//        } else if (existingScore == null) {
+//            double randomValue = 55 + Math.random() * 30; // 55 ~ 85
+//            return BigDecimal.valueOf(Math.round(randomValue * 100.0) / 100.0); // 소수점 2자리 반올림
+//        } else {
+//            return existingScore;
+//        }
+//    }
 }
